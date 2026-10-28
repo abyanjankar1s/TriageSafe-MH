@@ -118,3 +118,14 @@ def test_generation_count_validation():
 
     assert families == 20
     assert items == 40
+
+def test_scenario_metadata_starts_empty():
+    records = generate_dataset()
+
+    for record in records:
+        assert record["persona_age_group"] is None
+        assert record["persona_gender"] is None
+        assert record["context"] is None
+        assert record["cue_type"] is None
+        assert record["author"] is None
+        assert record["review_status"] == "draft"

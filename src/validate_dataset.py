@@ -28,6 +28,32 @@ VALID_CUES = {"direct", "cue_shifted"}
 VALID_VARIANTS = {"original", "paraphrase"}
 VALID_SPLITS = {"development", "test", "heldout"}
 
+VALID_AGE_GROUPS = {
+    "adult_18_24",
+    "adult_25_34",
+    "adult_35_49",
+    "adult_50_64",
+    "adult_65_plus",
+}
+
+VALID_GENDERS = {
+    "woman",
+    "man",
+    "nonbinary",
+    "unspecified",
+}
+
+VALID_AUTHORS = {
+    "human",
+    "ai_assisted",
+}
+
+VALID_REVIEW_STATUSES = {
+    "draft",
+    "reviewed",
+    "approved",
+}
+
 MIN_WORDS = 40
 MAX_WORDS = 120
 MAX_PAIR_WORD_DIFFERENCE = 15
@@ -50,6 +76,12 @@ REQUIRED_FIELDS = {
     "final_upper",
     "adjudicated",
     "notes",
+    "persona_age_group",
+    "persona_gender",
+    "context",
+    "cue_type",
+    "author",
+    "review_status",
 }
 
 
@@ -95,12 +127,58 @@ def validate_required_fields(record):
 
     return errors
 
+def validate_metadata(record, item_id, errors):
+    """Validate scenario-design metadata when populated."""
+
+    age_group = record.get("persona_age_group")
+    gender = record.get("persona_gender")
+    context = record.get("context")
+    cue_type = record.get("cue_type")
+    author = record.get("author")
+    review_status = record.get("review_status")
+
+    if age_group is not None and age_group not in VALID_AGE_GROUPS:
+        errors.append(
+            f"{item_id}: invalid persona_age_group '{age_group}'"
+        )
+
+    if gender is not None and gender not in VALID_GENDERS:
+        errors.append(
+            f"{item_id}: invalid persona_gender '{gender}'"
+        )
+
+    if context is not None:
+        if not isinstance(context, str) or not context.strip():
+            errors.append(
+                f"{item_id}: context must be null or a non-empty string"
+            )
+
+    if cue_type is not None:
+        if not isinstance(cue_type, str) or not cue_type.strip():
+            errors.append(
+                f"{item_id}: cue_type must be null or a non-empty string"
+            )
+
+    if author is not None and author not in VALID_AUTHORS:
+        errors.append(
+            f"{item_id}: invalid author '{author}'"
+        )
+
+    if review_status not in VALID_REVIEW_STATUSES:
+        errors.append(
+            f"{item_id}: invalid review_status '{review_status}'"
+        )
 
 def validate_record(record):
     """Validate one benchmark record."""
     errors = []
 
     item_id = record.get("item_id", "<missing item_id>")
+    validate_metadata(
+    record,
+    item_id,
+    errors,
+)
 
     if record.get("tier") not in VALID_TIERS:
         errors.append(
@@ -256,6 +334,16 @@ def validate_pairs(records):
     errors = []
     groups = defaultdict(list)
 
+def validate_pairs(records):
+    """
+    Validate direct/cue-shifted pairs.
+
+    Pair checks are performed separately for each family and variant,
+    so original and paraphrase records are not mixed together.
+    """
+    errors = []
+    groups = defaultdict(list)
+
     for record in records:
         key = (
             record.get("family_id"),
@@ -294,18 +382,36 @@ def validate_pairs(records):
         direct = cue_map["direct"]
         shifted = cue_map["cue_shifted"]
 
+        # Both members must belong to the same risk tier.
         if direct.get("tier") != shifted.get("tier"):
             errors.append(
                 f"{family_id} ({variant}): pair tier mismatch "
                 f"({direct.get('tier')} vs {shifted.get('tier')})"
             )
 
+        # Both members must belong to the same dataset split.
         if direct.get("split") != shifted.get("split"):
             errors.append(
                 f"{family_id} ({variant}): pair split mismatch "
                 f"({direct.get('split')} vs {shifted.get('split')})"
             )
 
+        # Both members must represent the same persona and situation.
+        matched_metadata_fields = [
+            "persona_age_group",
+            "persona_gender",
+            "context",
+        ]
+
+        for field in matched_metadata_fields:
+            if direct.get(field) != shifted.get(field):
+                errors.append(
+                    f"{family_id} ({variant}): pair metadata mismatch "
+                    f"for '{field}' "
+                    f"({direct.get(field)} vs {shifted.get(field)})"
+                )
+
+        # Pair lengths should remain approximately similar.
         direct_text = direct.get("text")
         shifted_text = shifted.get("text")
 

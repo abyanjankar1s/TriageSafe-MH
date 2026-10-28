@@ -25,13 +25,31 @@ def make_record(
         "cue_condition": cue_condition,
         "variant": "original",
         "split": "development",
+
+        # Scenario metadata
+        "persona_age_group": "adult_25_34",
+        "persona_gender": "woman",
+        "context": "work",
+        "cue_type": (
+            "direct_distress"
+            if cue_condition == "direct"
+            else "figurative_expression"
+        ),
+        "author": "human",
+        "review_status": "draft",
+
+        # Scenario text
         "text": text,
+
+        # Human annotations
         "rater_a_tier": None,
         "rater_b_tier": None,
         "rater_a_lower": None,
         "rater_a_upper": None,
         "rater_b_lower": None,
         "rater_b_upper": None,
+
+        # Final annotation
         "final_lower": None,
         "final_upper": None,
         "adjudicated": False,
@@ -139,3 +157,15 @@ def test_pair_split_mismatch_detected():
     errors = validate_dataset(records)
 
     assert any("pair split mismatch" in error for error in errors)
+
+def test_pair_metadata_mismatch_detected():
+    records = valid_pair()
+
+    records[1]["persona_age_group"] = "adult_50_64"
+
+    errors = validate_dataset(records)
+
+    assert any(
+        "pair metadata mismatch" in error
+        for error in errors
+    )

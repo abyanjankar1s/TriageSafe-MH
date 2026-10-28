@@ -78,34 +78,42 @@ def create_record(
     item_id = f"{family_id}_{cue_label}"
 
     return {
-        "family_id": family_id,
-        "item_id": item_id,
-        "tier": tier,
-        "cue_condition": cue_condition,
-        "variant": "original",
-        "split": split,
+    "family_id": family_id,
+    "item_id": item_id,
+    "tier": tier,
+    "cue_condition": cue_condition,
+    "variant": "original",
+    "split": split,
 
-        # Scenario text is intentionally empty.
-        # It will be authored and reviewed separately.
-        "text": "",
+    # Scenario-design metadata.
+    # These are assigned during controlled scenario planning.
+    "persona_age_group": None,
+    "persona_gender": None,
+    "context": None,
+    "cue_type": None,
+    "author": None,
+    "review_status": "draft",
 
-        # Independent human annotations.
-        "rater_a_tier": None,
-        "rater_b_tier": None,
+    # Scenario text is authored separately.
+    "text": "",
 
-        "rater_a_lower": None,
-        "rater_a_upper": None,
+    # Independent human annotations.
+    "rater_a_tier": None,
+    "rater_b_tier": None,
 
-        "rater_b_lower": None,
-        "rater_b_upper": None,
+    "rater_a_lower": None,
+    "rater_a_upper": None,
 
-        # Final consensus/adjudicated band.
-        "final_lower": None,
-        "final_upper": None,
+    "rater_b_lower": None,
+    "rater_b_upper": None,
 
-        "adjudicated": False,
-        "notes": None,
-    }
+    # Final consensus/adjudicated band.
+    "final_lower": None,
+    "final_upper": None,
+
+    "adjudicated": False,
+    "notes": None,
+}
 
 
 def generate_dataset(

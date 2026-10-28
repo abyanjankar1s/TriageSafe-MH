@@ -5,6 +5,14 @@
   "cue_condition": "direct|cue_shifted",
   "variant": "original|paraphrase",
   "split": "development|test|heldout",
+
+  "persona_age_group": "adult_18_24|adult_25_34|adult_35_49|adult_50_64|adult_65_plus",
+  "persona_gender": "woman|man|nonbinary|unspecified",
+  "context": "string",
+  "cue_type": "string",
+  "author": "human|ai_assisted",
+  "review_status": "draft|reviewed|approved",
+
   "text": "string",
 
   "rater_a_tier": "T1|T2|T3|T4|T5|null",
