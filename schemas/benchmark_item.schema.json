@@ -1,0 +1,23 @@
+{
+  "family_id": "string",
+  "item_id": "string",
+  "tier": "T1|T2|T3|T4|T5",
+  "cue_condition": "direct|cue_shifted",
+  "variant": "original|paraphrase",
+  "split": "development|test|heldout",
+  "text": "string",
+
+  "rater_a_tier": "T1|T2|T3|T4|T5|null",
+  "rater_b_tier": "T1|T2|T3|T4|T5|null",
+
+  "rater_a_lower": "integer|null",
+  "rater_a_upper": "integer|null",
+  "rater_b_lower": "integer|null",
+  "rater_b_upper": "integer|null",
+
+  "final_lower": "integer|null",
+  "final_upper": "integer|null",
+
+  "adjudicated": "boolean",
+  "notes": "string|null"
+}

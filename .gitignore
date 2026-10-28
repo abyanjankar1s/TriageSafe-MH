@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
+
+# Model weights
+*.safetensors
+*.gguf
+*.bin
+
+# Restricted benchmark material
+data/heldout/
+results/restricted/
+
+# Temporary files
+*.tmp
+*.log
+
+# Testing
+.pytest_cache/

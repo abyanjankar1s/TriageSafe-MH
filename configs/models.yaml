@@ -1,0 +1,80 @@
+# TriageSafe-MH Model Registry
+# Exact Hugging Face checkpoint IDs/revisions will be frozen
+# before the primary experiment.
+
+subject_models:
+
+  qwen3_8b:
+    family: "Qwen3"
+    parameters: "8B"
+    role: "subject"
+    enabled: true
+    checkpoint: null
+    revision: null
+
+  qwen3_14b:
+    family: "Qwen3"
+    parameters: "14B"
+    role: "subject"
+    enabled: true
+    checkpoint: null
+    revision: null
+
+  qwen3_32b:
+    family: "Qwen3"
+    parameters: "32B"
+    role: "subject"
+    enabled: true
+    checkpoint: null
+    revision: null
+
+  gemma3_27b:
+    family: "Gemma 3"
+    parameters: "27B"
+    role: "subject"
+    enabled: true
+    checkpoint: null
+    revision: null
+
+  mistral_small_31_24b:
+    family: "Mistral Small 3.1"
+    parameters: "24B"
+    role: "subject"
+    enabled: true
+    checkpoint: null
+    revision: null
+
+  olmo_31_32b:
+    family: "OLMo 3.1"
+    parameters: "32B"
+    role: "subject"
+    enabled: true
+    checkpoint: null
+    revision: null
+
+
+judge_models:
+
+  qwen3_32b:
+    family: "Qwen3"
+    parameters: "32B"
+    role: "judge"
+    enabled: true
+    checkpoint: null
+    revision: null
+
+  gemma3_27b:
+    family: "Gemma 3"
+    parameters: "27B"
+    role: "judge"
+    enabled: true
+    checkpoint: null
+    revision: null
+
+  mistral_small_31_24b:
+    family: "Mistral Small 3.1"
+    parameters: "24B"
+    role: "judge"
+    enabled: true
+    checkpoint: null
+    revision: null
