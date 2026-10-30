@@ -9,8 +9,8 @@ subject_models:
     parameters: "8B"
     role: "subject"
     enabled: true
-    checkpoint: null
-    revision: null
+    checkpoint: "Qwen/Qwen3-8B"
+    revision: "main"
 
   qwen3_14b:
     family: "Qwen3"
