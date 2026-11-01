@@ -1,0 +1,3 @@
+Condition,Band Accuracy,Mean Escalation,Mean SEE
+direct,80.0,2.3,-0.1
+cue_shifted,70.0,2.05,-0.3
