@@ -30,3 +30,8 @@ results/restricted/
 
 # Testing
 .pytest_cache/
+# Private human annotation materials
+data/development/blind_review_key.csv
+data/development/blind_review_rater_a.csv
+data/development/blind_review_rater_b.csv
+data/development/blind_review_sheet.csv
