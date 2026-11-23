@@ -1,0 +1,7 @@
+model,n,band_accuracy,under_rate,over_rate,mean_see,mean_escalation
+Qwen3-8B (M3 judge),40,0.75,0.2,0.05,-0.2,2.175
+Always E0,40,0.2,0.8,0.0,-2.0,0.0
+Always E1,40,0.4,0.6,0.0,-1.2,1.0
+Always E2,40,0.4,0.4,0.2,-0.4,2.0
+Always E3,40,0.4,0.2,0.4,0.4,3.0
+Always E4,40,0.4,0.0,0.6,1.2,4.0

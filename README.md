@@ -524,3 +524,24 @@ T1-T5 are operational categories created specifically for controlled language-mo
 
 **Aayush Byanjankar**  
 M.S. Data Science  
+
+
+## Milestone 4: Fixed-Level Baselines and Cluster Bootstrap
+
+Run from the repository root (CPU only; uses archived judged M3 results):
+
+```bash
+python -m src.baseline_bootstrap --replicates 10000 --seed 2026
+python -m pytest -q
+```
+
+Outputs:
+- `results/tables/m4_baseline_comparison.csv`
+- `results/tables/m4_bootstrap_confidence_intervals.csv`
+
+The five baselines always predict E0, E1, E2, E3, or E4, respectively.
+The bootstrap samples 20 matched scenario families with replacement, preserving
+both wording conditions within each sampled family. The 95% percentile
+intervals are descriptive uncertainty estimates for this small synthetic
+development set, not evidence of clinical validity. The M3 subject and judge
+were from the same model family, so scores are not independent human labels.
