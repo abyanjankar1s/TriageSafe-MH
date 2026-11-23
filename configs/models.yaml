@@ -4,6 +4,15 @@
 
 subject_models:
 
+  qwen3_4b:
+    family: "Qwen3"
+    parameters: "4B"
+    role: "subject"
+    enabled: true
+    checkpoint: "Qwen/Qwen3-4B"
+    revision: "main"
+
+
   qwen3_8b:
     family: "Qwen3"
     parameters: "8B"
@@ -78,3 +87,10 @@ judge_models:
     enabled: true
     checkpoint: null
     revision: null
+  phi35_mini:
+    family: "Phi"
+    parameters: "3.8B"
+    role: "judge"
+    enabled: true
+    checkpoint: "microsoft/Phi-3.5-mini-instruct"
+    revision: "main"

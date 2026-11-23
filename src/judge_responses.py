@@ -328,12 +328,14 @@ Return only the required JSON object.
         },
     ]
 
-    prompt = tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True,
-        enable_thinking=False,
-    )
+    template_kwargs = {
+        "tokenize": False,
+        "add_generation_prompt": True,
+    }
+    # Only Qwen3 accepts the thinking-mode option used in M3.
+    if "qwen3" in str(getattr(tokenizer, "name_or_path", "")).lower():
+        template_kwargs["enable_thinking"] = False
+    prompt = tokenizer.apply_chat_template(messages, **template_kwargs)
 
     return prompt
 
