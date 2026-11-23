@@ -54,16 +54,10 @@ PyYAML==6.0.3
 pytest==8.4.2
 ```
 
-The repository currently uses the following lightweight requirements for validation and testing:
-
-```text
-pytest>=8.0,<9.0
-PyYAML>=6.0,<7.0
-```
-
-GPU model inference additionally requires the Hugging Face/PyTorch stack listed above.
-
-> **Note:** `bitsandbytes` was not present in the captured environment snapshot. If the current `run_models.py` configuration uses 4-bit bitsandbytes quantization, install a compatible `bitsandbytes` version before running that configuration.
+The repository's `requirements.txt` includes testing, data analysis, model inference,
+and quantization dependencies. NumPy and Matplotlib currently use compatible
+version ranges pending a verified environment lock. For CUDA GPU inference,
+install a PyTorch wheel compatible with the GPU runtime.
 
 ---
 
@@ -93,17 +87,8 @@ Install the repository requirements:
 pip install -r requirements.txt
 ```
 
-For model inference, install the additional model dependencies:
-
-```bash
-pip install torch transformers accelerate pandas
-```
-
-If using the 4-bit quantized model configuration:
-
-```bash
-pip install bitsandbytes
-```
+The requirements file includes the model dependencies. Confirm GPU/CUDA and
+`bitsandbytes` compatibility before running quantized inference.
 
 ---
 
@@ -281,7 +266,7 @@ python src/validate_scenario_texts.py
 Validate the completed benchmark:
 
 ```bash
-python src/validate_dataset.py
+python src/validate_dataset.py data/development/development_dataset.jsonl
 ```
 
 The submitted development dataset contains:
@@ -470,9 +455,9 @@ Runtime depends strongly on hardware.
 | Dataset preparation | Seconds |
 | Metrics calculation | Seconds |
 | Tables/figures | Seconds |
-| Qwen3-8B model download | Several minutes depending on network |
-| Qwen3-8B inference | Several minutes or longer depending on GPU |
-| Automated LLM judging | Several minutes or longer depending on GPU |
+| Qwen3-8B model download | Not measured in the archived M3 run; varies by network |
+| Qwen3-8B inference | Not measured in the archived M3 run; benchmark on target GPU |
+| Automated LLM judging | Not measured in the archived M3 run; benchmark on target GPU |
 
 The preliminary experiment was run using an **NVIDIA Tesla T4 GPU in Google Colab**.
 
@@ -486,7 +471,7 @@ For the shortest reproduction path:
 
 ```bash
 # 1. Validate benchmark
-python src/validate_dataset.py
+python src/validate_dataset.py data/development/development_dataset.jsonl
 
 # 2. Run Qwen3-8B
 python src/run_models.py \
