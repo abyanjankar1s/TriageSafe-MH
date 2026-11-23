@@ -1,0 +1,5 @@
+Model,Cue,Correct,Under,Over,N,Accuracy (%)
+Qwen3-4B,cue_shifted,5,10,5,20,25.0
+Qwen3-4B,direct,9,7,4,20,45.0
+Qwen3-8B,cue_shifted,7,9,4,20,35.0
+Qwen3-8B,direct,12,3,5,20,60.0

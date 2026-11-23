@@ -1,0 +1,11 @@
+Model,Tier,Correct,Under,Over,N,Accuracy (%)
+Qwen3-4B,T1,0,0,8,8,0.0
+Qwen3-4B,T2,7,0,1,8,87.5
+Qwen3-4B,T3,1,7,0,8,12.5
+Qwen3-4B,T4,3,5,0,8,37.5
+Qwen3-4B,T5,3,5,0,8,37.5
+Qwen3-8B,T1,0,0,8,8,0.0
+Qwen3-8B,T2,8,0,0,8,100.0
+Qwen3-8B,T3,3,4,1,8,37.5
+Qwen3-8B,T4,6,2,0,8,75.0
+Qwen3-8B,T5,2,6,0,8,25.0
