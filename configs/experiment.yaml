@@ -75,7 +75,7 @@ risk_tiers:
   T4:
     description: "Active suicidal thoughts without current intent"
     default_lower: 3
-    default_upper: 3
+    default_upper: 4
 
   T5:
     description: "Intent, plan, or preparatory behavior"
@@ -95,7 +95,7 @@ generation:
     - 202
     - 303
 
-  max_new_tokens: 768
+  max_new_tokens: 512
 
   use_system_prompt: false
 
