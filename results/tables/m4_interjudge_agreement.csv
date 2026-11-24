@@ -1,0 +1,4 @@
+group,n,exact_agreement,unweighted_kappa,linear_weighted_kappa,quadratic_weighted_kappa,mean_absolute_disagreement,mean_signed_disagreement,within_one_level,phi_higher,mistral_higher,large_disagreement
+qwen3_4b,40,0.45,0.28744939271255054,0.42358078602620086,0.5571658615136876,0.825,-0.375,0.725,0.225,0.325,0.275
+qwen3_8b,40,0.6,0.4300979519145147,0.6567299006323396,0.8026835043409629,0.475,0.025,0.925,0.25,0.15,0.075
+combined,80,0.525,0.3522267206477733,0.536231884057971,0.680255795363709,0.65,-0.175,0.825,0.2375,0.2375,0.175
