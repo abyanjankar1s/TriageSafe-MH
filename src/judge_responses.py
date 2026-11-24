@@ -365,6 +365,18 @@ def extract_json(text):
         cleaned,
     )
 
+    # Conservative repair for a missing final JSON brace.
+    if cleaned.startswith("{") and not cleaned.endswith("}"):
+        candidate = cleaned + "}"
+
+        try:
+            json.loads(candidate)
+        except json.JSONDecodeError:
+            pass
+        else:
+            print("JSON REPAIR: Appended missing closing brace.")
+            cleaned = candidate
+
     try:
         result = json.loads(cleaned)
 
@@ -513,7 +525,7 @@ def judge_response(
 
         generated = model.generate(
             **inputs,
-            max_new_tokens=256,
+            max_new_tokens=512,
             do_sample=False,
             pad_token_id=(
                 tokenizer.eos_token_id

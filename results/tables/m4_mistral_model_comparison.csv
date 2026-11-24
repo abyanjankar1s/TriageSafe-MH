@@ -1,0 +1,3 @@
+model,n,band_accuracy,under_escalation,over_escalation,mean_signed_error
+qwen3_4b,40.0,0.7,0.225,0.075,-0.175
+qwen3_8b,40.0,0.725,0.225,0.05,-0.225
