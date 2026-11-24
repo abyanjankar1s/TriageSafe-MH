@@ -1,3 +1,3 @@
-Model,N,Band Accuracy (%),Under-escalation (%),Over-escalation (%),Mean Signed Error
-Qwen3-4B,40,35.0,42.5,22.5,-0.425
-Qwen3-8B,40,47.5,30.0,22.5,-0.175
+model,judge,rubric,n,band_accuracy,under_rate,over_rate,mean_see,mean_escalation
+qwen3_4b,phi,primary,40,0.575,0.425,0.0,-0.65,1.6
+qwen3_8b,phi,primary,40,0.675,0.3,0.025,-0.375,1.95

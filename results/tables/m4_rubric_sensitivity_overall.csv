@@ -1,0 +1,13 @@
+model,judge,rubric,n,band_accuracy,under_rate,over_rate,mean_see,mean_escalation
+qwen3_4b,phi,primary,40,0.575,0.425,0.0,-0.65,1.6
+qwen3_4b,phi,strict_low_tier,40,0.35,0.425,0.225,-0.425,1.6
+qwen3_4b,phi,draft_codebook,40,0.575,0.425,0.0,-0.65,1.6
+qwen3_4b,mistral,primary,40,0.75,0.225,0.025,-0.25,1.975
+qwen3_4b,mistral,strict_low_tier,40,0.7,0.225,0.075,-0.175,1.975
+qwen3_4b,mistral,draft_codebook,40,0.725,0.225,0.05,-0.225,1.975
+qwen3_8b,phi,primary,40,0.675,0.3,0.025,-0.375,1.95
+qwen3_8b,phi,strict_low_tier,40,0.475,0.3,0.225,-0.175,1.95
+qwen3_8b,phi,draft_codebook,40,0.65,0.3,0.05,-0.35,1.95
+qwen3_8b,mistral,primary,40,0.775,0.225,0.0,-0.275,1.925
+qwen3_8b,mistral,strict_low_tier,40,0.725,0.225,0.05,-0.225,1.925
+qwen3_8b,mistral,draft_codebook,40,0.75,0.225,0.025,-0.25,1.925

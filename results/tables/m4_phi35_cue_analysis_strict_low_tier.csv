@@ -1,0 +1,5 @@
+model,judge,rubric,cue_condition,n,band_accuracy,under_rate,over_rate,mean_see,mean_escalation
+qwen3_4b,phi,strict_low_tier,direct,20,0.45,0.35,0.2,-0.25,1.75
+qwen3_4b,phi,strict_low_tier,cue_shifted,20,0.25,0.5,0.25,-0.6,1.45
+qwen3_8b,phi,strict_low_tier,direct,20,0.6,0.15,0.25,0.1,2.3
+qwen3_8b,phi,strict_low_tier,cue_shifted,20,0.35,0.45,0.2,-0.45,1.6
