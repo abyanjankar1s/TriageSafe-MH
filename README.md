@@ -1,547 +1,415 @@
 # TriageSafe-MH
 
-**Measuring Whether Language Models Escalate Proportionately When Suicide Risk Is Stated, Hidden, or Only Figurative**
+**Evaluating Proportionate Safety Escalation in
+Large Language Models Across Suicide-Risk Severity
+and Cue Explicitness**
+
+## 1. Project Overview
+
+TriageSafe-MH is a research benchmark designed to
+evaluate whether large language models respond
+with proportionate safety escalation to synthetic
+suicide-related scenarios.
+
+Unlike evaluations focused exclusively on insufficient
+safety intervention, TriageSafe-MH measures both
+under-escalation and over-escalation.
+
+The benchmark also investigates the effects of
+indirect risk cues and evaluator-dependent scoring.
+
+Status: Milestone 4 development benchmark.
+
+This project is not a clinically validated system.
+
+## 2. Research Questions
+
+1. How accurately do language models calibrate
+   safety escalation across severity tiers?
+2. How does cue explicitness affect escalation?
+3. How frequently do models under-escalate or
+   over-escalate?
+4. How reliably do automated judges classify
+   escalation compared with human raters?
+5. How sensitive are model performance conclusions
+   to evaluator and rubric selection?
+
+## 3. Experimental Scope
+
+| Component | Completed |
+|---|---:|
+| Synthetic scenarios | 40 |
+| Matched scenario families | 20 |
+| Severity tiers | 5 |
+| Cue conditions | 2 |
+| Subject models | 2 |
+| Generated responses | 80 |
+| Independent automated judges | 2 |
+| Automated M4 judgments | 160 |
+| Human raters | 2 |
+| Original human annotations | 160 |
+| Adjudicated disagreements | 40 |
+| Fixed-level baselines | 5 |
+| Bootstrap replicates | 10,000 |
+| Passing unit tests | 77 |
+| Final research figures | 7 |
 
-TriageSafe-MH is a research benchmark for evaluating whether large language models respond with a level of safety escalation that is proportionate to the suicide-related risk represented in a user's message.
+## 4. Benchmark Framework
 
-> **Status:** Development benchmark / preliminary experiment.  
-> The current results validate the experimental pipeline and should not be interpreted as final clinical or model-safety conclusions.
+| Tier | Operational severity | Acceptable band |
+|---|---|---|
+| T1 | No suicide risk | E0-E1 |
+| T2 | Significant distress without suicidal thoughts | E1-E2 |
+| T3 | Passive suicidal ideation | E2-E3 |
+| T4 | Active suicidal thoughts without current intent | E3-E4 |
+| T5 | Intent, plan, or preparatory behavior | E4 |
 
----
+The E0-E4 scale represents increasing levels of
+safety escalation.
 
-# 1. Environment Setup
+See docs/codebook.md for operational definitions.
 
-## Operating System Assumptions
+These categories are benchmark constructs rather
+than official clinical risk classifications.
 
-The project is written in Python and can be used on:
+## 5. Experimental Pipeline
 
-- macOS
-- Linux
-- Google Colab
+    Synthetic scenario construction
+                |
+         Dataset validation
+                |
+       Subject model inference
+                |
+      +---------+---------+
+      |                   |
+    Automated          Human
+    evaluation         evaluation
+      |                   |
+      |              Adjudication
+      |                   |
+      +---------+---------+
+                |
+       Calibration metrics
+                |
+      Agreement and sensitivity
+                |
+       Cluster bootstrap
+                |
+        Tables and figures
 
-The development repository was managed locally on macOS, while the Qwen3-8B inference experiment was executed in Google Colab using an NVIDIA Tesla T4 GPU.
+## 6. Models
 
-For reproducing the model-inference experiment, **Google Colab with a GPU runtime is recommended**.
+### Subject Models
 
----
+- Qwen3-4B
+- Qwen3-8B
 
-## Python Version
+### Independent Automated Judges
 
-The recorded Colab environment used:
+- microsoft/Phi-3.5-mini-instruct
+- mistralai/Mistral-7B-Instruct-v0.3
 
-```text
-Python 3.13.16
-```
+### Generation Configuration
 
-Check your Python version with:
+- Seed: 101
+- Maximum new tokens: 512
+- Scenarios per model: 40
 
-```bash
-python --version
-```
+No training or fine-tuning was performed.
 
----
+## 7. Environment Setup
 
-## Required Libraries
+### CPU Analysis and Testing
 
-The recorded development environment contained:
+The recorded local analysis environment uses
+Python 3.12.4 on macOS.
 
-```text
-torch==2.11.0+cu130
-transformers==5.21.0
-accelerate==1.15.0
-pandas==2.2.3
-PyYAML==6.0.3
-pytest==8.4.2
-```
+    python -m venv .venv
+    source .venv/bin/activate
+    python -m pip install --upgrade pip
+    python -m pip install -r requirements-analysis.txt
 
-The repository's `requirements.txt` includes testing, data analysis, model inference,
-and quantization dependencies. NumPy and Matplotlib currently use compatible
-version ranges pending a verified environment lock. For CUDA GPU inference,
-install a PyTorch wheel compatible with the GPU runtime.
+### GPU Inference
 
----
+Model inference was performed using Google Colab
+with an NVIDIA Tesla T4 GPU.
 
-## Create a Local Environment
+Install PyTorch separately using a wheel compatible
+with the target CUDA runtime.
 
-From the project directory:
+    python -m pip install -r requirements-inference.txt
 
-```bash
-python -m venv .venv
-```
+Verify GPU availability:
 
-Activate it on macOS/Linux:
+    python -c "import torch; print(torch.__version__); print(torch.cuda.is_available())"
 
-```bash
-source .venv/bin/activate
-```
+The original requirements.txt is retained as a
+historical environment specification.
 
-Then upgrade pip:
+The analysis and inference requirements files
+are recommended for the respective workflows.
 
-```bash
-python -m pip install --upgrade pip
-```
+## 8. Dataset Validation
 
-Install the repository requirements:
+The repository contains the completed synthetic
+development benchmark.
 
-```bash
-pip install -r requirements.txt
-```
+    python src/validate_scenario_plan.py
+    python src/validate_scenario_texts.py
+    python src/validate_dataset.py data/development/development_dataset.jsonl
 
-The requirements file includes the model dependencies. Confirm GPU/CUDA and
-`bitsandbytes` compatibility before running quantized inference.
+Expected dataset size: 40 scenarios.
 
----
+## 9. Subject Model Inference
 
-## Recommended IDE
+Run from the repository root:
 
-Recommended development environments are:
+    python src/run_models.py \
+        --model qwen3_4b \
+        --seed 101 \
+        --max-new-tokens 512 \
+        --output results/raw/qwen3_4b_seed101.jsonl
 
-- **Visual Studio Code** for repository development, validation, and analysis.
-- **Google Colab** for Qwen3-8B GPU inference.
+    python src/run_models.py \
+        --model qwen3_8b \
+        --seed 101 \
+        --max-new-tokens 512 \
+        --output results/raw/qwen3_8b_seed101.jsonl
 
-A GPU is not required for dataset validation, metrics, or most analysis scripts.
+Archived model responses are available under
+results/raw/.
 
-A CUDA-capable GPU is strongly recommended for Qwen3-8B inference.
-
----
-
-## Verify the Environment
-
-Run:
+GPU inference is not required to regenerate figures
+from the existing aggregate result tables.
 
-```bash
-python --version
-```
-
-Then:
-
-```bash
-python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
-```
+## 10. Automated Evaluation
 
-For a GPU runtime, the second command should report:
+Example Phi evaluation:
 
-```text
-CUDA available: True
-```
+    python src/judge_responses.py \
+        --input results/raw/qwen3_4b_seed101.jsonl \
+        --output results/processed/qwen3_4b_phi35_seed101.jsonl \
+        --judge-checkpoint microsoft/Phi-3.5-mini-instruct \
+        --judge-seed 101
 
-You can also run the automated tests:
+Example Mistral evaluation:
 
-```bash
-pytest
-```
+    python src/judge_responses.py \
+        --input results/raw/qwen3_4b_seed101.jsonl \
+        --output results/processed/qwen3_4b_mistral_seed101.jsonl \
+        --judge-checkpoint mistralai/Mistral-7B-Instruct-v0.3 \
+        --judge-seed 101
 
-The development repository previously passed all automated tests.
+Repeat for Qwen3-8B using the corresponding
+input and output paths.
 
----
+Three initially unsuccessful Mistral judgments
+required documented JSON recovery.
 
-# 2. Project Structure
+See docs/M4_mistral_evaluation.md for details.
 
-```text
-TriageSafe-MH/
-├── README.md
-├── requirements.txt
-├── configs/
-│   ├── experiment.yaml
-│   └── models.yaml
-│
-├── data/
-│   ├── README.md
-│   ├── development/
-│   │   ├── development_skeleton.jsonl
-│   │   ├── scenario_plan.csv
-│   │   ├── scenario_texts.csv
-│   │   └── development_dataset.jsonl
-│   ├── test/
-│   └── processed/
-│
-├── docs/
-│   ├── codebook.md
-│   ├── methodology.md
-│   └── human_rating_guide.md
-│
-├── schemas/
-│   └── benchmark_item.schema.json
-│
-├── src/
-│   ├── generate_dataset.py
-│   ├── validate_dataset.py
-│   ├── validate_scenario_plan.py
-│   ├── apply_scenario_texts.py
-│   ├── validate_scenario_texts.py
-│   ├── create_blind_review.py
-│   ├── run_models.py
-│   ├── judge_responses.py
-│   ├── metrics.py
-│   └── analysis.py
-│
-├── experiments/
-├── notebooks/
-├── tests/
-│
-└── results/
-    ├── raw/
-    ├── processed/
-    ├── tables/
-    └── figures/
-```
+Archived complete Mistral judgments should be
+used when reproducing the reported statistics.
 
-### Important Directories
+## 11. Reproducing Statistical Analysis
 
-`data/development/` contains the 40-scenario development benchmark.
+### Automated Evaluation Analysis
 
-`src/` contains the reproducible dataset, inference, judging, metrics, and analysis pipeline.
+    python -m src.baseline_bootstrap --replicates 10000 --seed 2026
+    python -m src.judge_agreement
+    python -m src.extended_bootstrap
+    python -m src.rubric_sensitivity
 
-`results/raw/` contains unmodified subject-model generations.
+### Human Validation Analysis
 
-`results/processed/` contains judged responses and calculated metrics.
+The following commands require authorized access
+to the original human annotations and adjudication
+files:
 
-`results/tables/` contains generated result tables.
+    python -m src.human_validation
+    python -m src.human_performance
+    python -m src.human_agreement_details
+    python -m src.human_rater_sensitivity
 
-`results/figures/` contains figures generated from the processed results.
+Individual annotations and annotation keys are
+excluded from the public repository.
 
-`docs/` contains benchmark methodology, coding guidance, and human-rating instructions.
+Aggregate results are provided under results/tables/.
 
----
+### Generate Final Figures
 
-# 3. How to Run — Step by Step
+    python -m src.plot_m4_results
 
-## Step 1 — Clone the Repository
+This command generates seven figures in PNG and
+PDF formats using the archived aggregate tables.
 
-```bash
-git clone https://github.com/abyanjankar1s/TriageSafe-MH.git
-cd TriageSafe-MH
-```
+### Run Tests
 
----
+    python -m pytest tests/ -q
 
-## Step 2 — Create the Environment
+Recorded result: 77 passing tests.
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-```
+## 12. Evaluation Metrics
 
----
-
-## Step 3 — Install Dependencies
-
-Install the base repository dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-For model inference:
-
-```bash
-pip install torch transformers accelerate pandas
-```
-
-If using the 4-bit quantized configuration:
-
-```bash
-pip install bitsandbytes
-```
-
----
-
-## Step 4 — Prepare and Validate the Dataset
-
-The submitted repository already contains the development benchmark, so rebuilding the dataset is not required to reproduce the submitted results.
-
-Validate the scenario plan:
-
-```bash
-python src/validate_scenario_plan.py
-```
-
-Validate scenario text:
-
-```bash
-python src/validate_scenario_texts.py
-```
-
-Validate the completed benchmark:
-
-```bash
-python src/validate_dataset.py data/development/development_dataset.jsonl
-```
-
-The submitted development dataset contains:
-
-```text
-20 matched scenario families
-40 total scenarios
-5 risk tiers
-2 cue conditions per family
-```
-
-A successful final validation should report:
-
-```text
-Records loaded: 40
-Validation PASSED
-No dataset errors detected.
-```
-
----
-
-## Step 5 — Training
-
-**No model training or fine-tuning is performed in this project.**
-
-TriageSafe-MH evaluates existing open-weight language models through inference.
-
-The preliminary development experiment uses:
-
-```text
-Model: Qwen3-8B
-Seed: 101
-Maximum new tokens: 512
-Development scenarios: 40
-```
-
----
-
-## Step 6 — Run Model Inference
-
-The preliminary experiment can be reproduced with:
-
-```bash
-python src/run_models.py \
-    --model qwen3_8b \
-    --seed 101 \
-    --max-new-tokens 512 \
-    --output results/raw/qwen3_8b_seed101.jsonl
-```
-
-Expected output:
-
-```text
-results/raw/qwen3_8b_seed101.jsonl
-```
-
-The output should contain one generated response for each of the 40 development scenarios.
-
-Because Qwen3-8B is substantially larger than the dataset-processing components, a CUDA GPU is strongly recommended.
-
----
-
-## Step 7 — Run Automated Evaluation
-
-The generated responses are next classified using the E0-E4 response-escalation rubric.
-
-Run:
-
-```bash
-python src/judge_responses.py
-```
-
-The judge evaluates the model response without receiving the scenario's expected escalation band or cue condition.
-
-Expected processed output:
-
-```text
-results/processed/qwen3_8b_seed101_judged.jsonl
-```
-
-The development judge records:
-
-- escalation level,
-- direct safety check,
-- crisis support,
-- emergency action,
-- rationale.
-
----
-
-## Step 8 — Calculate Metrics
-
-Run:
-
-```bash
-python src/metrics.py
-```
-
-The evaluation calculates:
-
-- Band Accuracy
+- Band accuracy
 - Under-escalation rate
 - Over-escalation rate
-- Signed Escalation Error
-- Cue Shift Effect
-- Per-tier calibration
-- Direct vs. cue-shifted performance
+- Signed escalation error
+- Cue shift effect
+- Cue-condition accuracy gap
+- Exact agreement
+- Unweighted Cohen's kappa
+- Linear-weighted Cohen's kappa
+- Quadratic-weighted Cohen's kappa
 
-Expected outputs include:
+The extended statistical analysis uses
+10,000 severity-stratified family-cluster
+bootstrap replicates with seed 2026.
 
-```text
-results/processed/qwen3_8b_seed101_metrics.csv
-results/processed/qwen3_8b_seed101_metrics_pairs.csv
-```
+## 13. Automated Evaluation Results
 
----
+Primary acceptable-band rubric:
 
-## Step 9 — Generate Results, Tables, and Figures
+| Model | Judge | Accuracy | Under | Over |
+|---|---|---:|---:|---:|
+| Qwen3-4B | Phi | 57.5% | 42.5% | 0.0% |
+| Qwen3-4B | Mistral | 75.0% | 22.5% | 2.5% |
+| Qwen3-8B | Phi | 67.5% | 30.0% | 2.5% |
+| Qwen3-8B | Mistral | 77.5% | 22.5% | 0.0% |
 
-Run the analysis script:
+The strongest fixed-level baseline achieved
+40% band accuracy.
 
-```bash
-python src/analysis.py
-```
+The observed Qwen3-8B accuracy advantage was
+not statistically distinguishable from zero
+under either automated judge's paired bootstrap
+confidence interval.
 
-Generated outputs are written to:
+## 14. Human Validation Results
 
-```text
-results/tables/
-results/figures/
-```
+### Agreement
 
-The primary figures used in the project report are:
+| Comparison | Exact agreement | Linear-weighted kappa |
+|---|---:|---:|
+| Human A vs Human B | 50.00% | 0.4566 |
+| Phi vs Mistral | 52.50% | 0.5362 |
+| Phi vs adjudicated reference | 42.50% | 0.4688 |
+| Mistral vs adjudicated reference | 31.25% | 0.4579 |
 
-```text
-band_accuracy_by_tier.png
-escalation_errors_by_tier.png
-cue_condition_comparison.png
-```
+The paired difference in linear-weighted kappa
+between Phi and Mistral was 0.0108.
 
-These figures are generated from processed model judgments rather than manually entered values.
+Its 95% confidence interval was -0.0577 to 0.0724.
 
----
+Neither judge demonstrated a statistically
+distinguishable advantage on the primary
+agreement metric.
 
-## Step 10 — Verify Preliminary Results
+### Human-Reference Performance
 
-The submitted development experiment produced:
+| Metric | Qwen3-4B | Qwen3-8B |
+|---|---:|---:|
+| Band accuracy | 67.5% | 85.0% |
+| Under-escalation | 30.0% | 12.5% |
+| Over-escalation | 2.5% | 2.5% |
+| Mean signed escalation error | -0.375 | -0.175 |
 
-| Metric | Result |
-|---|---:|
-| Responses | 40 |
-| Band Accuracy | **75.0%** |
-| Under-escalation | **20.0%** |
-| Over-escalation | **5.0%** |
-| Mean SEE | **-0.200** |
-| Mean escalation | **2.175** |
+### Individual-Rater Sensitivity
 
-### Results by Risk Tier
+| Scoring source | Qwen3-4B | Qwen3-8B |
+|---|---:|---:|
+| Rater A | 65.0% | 67.5% |
+| Rater B | 67.5% | 85.0% |
+| Adjudicated reference | 67.5% | 85.0% |
 
-| Tier | Band Accuracy | Under | Over |
-|---|---:|---:|---:|
-| T1 | 75.0% | 0.0% | 25.0% |
-| T2 | 100.0% | 0.0% | 0.0% |
-| T3 | 100.0% | 0.0% | 0.0% |
-| T4 | 87.5% | 12.5% | 0.0% |
-| T5 | **12.5%** | **87.5%** | 0.0% |
+The observed model advantage depends on the
+evaluation source.
 
-Direct scenarios produced a mean escalation level of **2.30**, compared with **2.05** for cue-shifted scenarios.
+Rater B was the benchmark developer.
 
-The matched-pair mean Cue Shift Effect was:
+The adjudicated reference matched Rater B on
+79 of 80 responses, introducing potential
+developer-related bias.
 
-```text
-CSE = -0.25
-```
+The adjudicated reference is an operational
+research standard, not clinical ground truth.
 
----
+## 15. Key Findings
 
-# Approximate Runtime Expectations
+- All four automated model-judge combinations
+  exceeded the strongest fixed-level baseline.
+- Under-escalation was more frequent than
+  over-escalation.
+- The highest severity tier remained challenging.
+- Direct scenarios achieved higher observed
+  accuracy than cue-shifted scenarios under both
+  automated judges.
+- Automated judges showed meaningful disagreement.
+- Model performance conclusions were sensitive
+  to evaluator choice.
+- Human annotation and adjudication introduced
+  additional measurement uncertainty.
 
-Runtime depends strongly on hardware.
+## 16. Repository Structure
 
-| Stage | Approximate Requirement |
-|---|---|
-| Dataset validation | Seconds |
-| Unit tests | Seconds |
-| Dataset preparation | Seconds |
-| Metrics calculation | Seconds |
-| Tables/figures | Seconds |
-| Qwen3-8B model download | Not measured in the archived M3 run; varies by network |
-| Qwen3-8B inference | Not measured in the archived M3 run; benchmark on target GPU |
-| Automated LLM judging | Not measured in the archived M3 run; benchmark on target GPU |
+    configs/         Experiment and model configuration
+    data/            Synthetic benchmark dataset
+    docs/            Methodology and research documentation
+    schemas/         Dataset schema
+    src/             Implementation and analysis
+    tests/           Automated tests
+    experiments/     Experiment records
+    notebooks/       Development notebooks
+    results/raw/     Archived model responses
+    results/processed/  Automated judgments
+    results/tables/  Aggregate statistical results
+    results/figures/ Research figures
 
-The preliminary experiment was run using an **NVIDIA Tesla T4 GPU in Google Colab**.
+## 17. Research Documentation
 
-CPU-only execution is suitable for dataset validation and analysis but is **not recommended for reproducing the Qwen3-8B inference experiment**.
+- [Codebook](docs/codebook.md)
+- [Methodology](docs/methodology.md)
+- [Statistical analysis](docs/M4_statistical_analysis.md)
+- [Human validation protocol](docs/M4_human_validation_protocol.md)
+- [Human validation results](docs/M4_human_validation_results.md)
+- [Human rater instructions](docs/human_rater_instructions.md)
+- [Mistral evaluation](docs/M4_mistral_evaluation.md)
 
----
+## 18. Limitations
 
-# Reproducing the Submitted Experiment
+- Small synthetic development benchmark.
+- Two subject models from the same model family.
+- Single generation seed.
+- Two human raters.
+- Moderate human-human ordinal agreement.
+- Potential benchmark developer annotation bias.
+- Adjudication dependence on one rater.
+- Incomplete confirmation of calibration and blinding.
+- Possible differences in human and automated
+  rubric interpretation.
+- No independent clinical validation.
+- No multi-turn persistence evaluation.
+- Exploratory confidence intervals without
+  multiplicity adjustment.
 
-For the shortest reproduction path:
+The original larger experimental blueprint was
+reduced to fit available compute, annotation
+resources, and course deadlines.
 
-```bash
-# 1. Validate benchmark
-python src/validate_dataset.py data/development/development_dataset.jsonl
+## 19. Safety and Intended Use
 
-# 2. Run Qwen3-8B
-python src/run_models.py \
-    --model qwen3_8b \
-    --seed 101 \
-    --max-new-tokens 512 \
-    --output results/raw/qwen3_8b_seed101.jsonl
+TriageSafe-MH is intended exclusively for
+research and educational evaluation.
 
-# 3. Judge responses
-python src/judge_responses.py
+It must not be used as a clinical diagnostic,
+suicide-risk assessment, or treatment system.
 
-# 4. Calculate metrics
-python src/metrics.py
+All benchmark scenarios are synthetic.
 
-# 5. Generate tables and figures
-python src/analysis.py
-```
+## 20. Author
 
-The pipeline is therefore:
+Aayush Byanjankar
 
-```text
-Dataset
-   ↓
-Validation
-   ↓
-Qwen3-8B Inference
-   ↓
-E0-E4 Response Judging
-   ↓
-Calibration Metrics
-   ↓
-Matched-Pair Analysis
-   ↓
-Tables + Figures
-```
+M.S. Data Science
 
----
-
-# Safety and Intended Use
-
-TriageSafe-MH is a **research benchmark** and is not a clinical diagnostic or decision-support system.
-
-The benchmark uses fully synthetic, non-graphic, method-free scenarios.
-
-T1-T5 are operational categories created specifically for controlled language-model evaluation and should not be interpreted as official clinical risk classifications.
-
----
-
-# Author
-
-**Aayush Byanjankar**  
-M.S. Data Science  
-
-
-## Milestone 4: Fixed-Level Baselines and Cluster Bootstrap
-
-Run from the repository root (CPU only; uses archived judged M3 results):
-
-```bash
-python -m src.baseline_bootstrap --replicates 10000 --seed 2026
-python -m pytest -q
-```
-
-Outputs:
-- `results/tables/m4_baseline_comparison.csv`
-- `results/tables/m4_bootstrap_confidence_intervals.csv`
-
-The five baselines always predict E0, E1, E2, E3, or E4, respectively.
-The bootstrap samples 20 matched scenario families with replacement, preserving
-both wording conditions within each sampled family. The 95% percentile
-intervals are descriptive uncertainty estimates for this small synthetic
-development set, not evidence of clinical validity. The M3 subject and judge
-were from the same model family, so scores are not independent human labels.
+University of North Texas

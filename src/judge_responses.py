@@ -23,12 +23,6 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-import torch
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-)
 
 
 # ============================================================
@@ -236,6 +230,9 @@ def load_jsonl(path):
 def set_seed(seed):
     """Set reproducibility seeds."""
 
+    import torch
+
+
     random.seed(seed)
     torch.manual_seed(seed)
 
@@ -253,6 +250,14 @@ def load_judge(checkpoint):
 
     Designed to allow Qwen3-8B to run on a Colab Tesla T4.
     """
+
+    import torch
+    from transformers import (
+        AutoModelForCausalLM,
+        AutoTokenizer,
+        BitsAndBytesConfig,
+    )
+
 
     print()
     print(
@@ -503,6 +508,9 @@ def judge_response(
     """
     Judge one subject-model response.
     """
+
+    import torch
+
 
     set_seed(seed)
 
